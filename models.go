@@ -10,7 +10,10 @@ type CreateUser struct {
 }
 
 type GetUser struct {
-	Name string `json:"name"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	DisplayName string `json:"displayName"`
+	Description string `json:"description"`
 }
 
 type UpdateUser struct {

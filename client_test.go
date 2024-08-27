@@ -55,8 +55,9 @@ func TestGetUsers(t *testing.T) {
 		t.Fatalf("GetUser failed: %v", err)
 	}
 
-	if users.Name != "" {
-		t.Errorf("GetUser returned unexpected ID: got %v, want %v", users.Name, users)
+	// Check if users list is not empty
+	if len(users) == 0 {
+		t.Errorf("Expected at least one user, got 0")
 	}
 }
 
