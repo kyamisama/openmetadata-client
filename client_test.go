@@ -6,8 +6,8 @@ import (
 
 // setup function to initialize the client
 func setup() *Client {
-	baseURL := "http://192.168.0.19:8585/api/v1/users" // OpenMetadataのAPIのベースURL
-	authToken := ""                                    // 有効な認証トークン
+	baseURL := "http://192.168.0.19:8585/api/v1/users"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // OpenMetadataのAPIのベースURL
+	authToken := "eyJraWQiOiJHYjM4OWEtOWY3Ni1nZGpzLWE5MmotMDI0MmJrOTQzNTYiLCJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJvcGVuLW1ldGFkYXRhLm9yZyIsInN1YiI6ImMzNzNpc20iLCJyb2xlcyI6WyJBZG1pbiJdLCJlbWFpbCI6ImMzNzNpc21AZ21haWwuY29tIiwiaXNCb3QiOnRydWUsInRva2VuVHlwZSI6IkJPVCIsImlhdCI6MTcyMzUyNDM3MiwiZXhwIjoxNzMxMzAwMzcyfQ.nXk9xbyYUTMPiKA47o1ddS_XSuFLXw13OFnPLKQCxbOgMHQflmVz5inT3hpu5IbTOHDPlPP_UOz8-voWAqHwA9epJnMQd3EXawGANvdscXXDggyIIjsaFikQVvFWEaC1qTHjOBZVdrHSUOXab5fZ_2pKkJmFNDoP3ullzSKgNhrW8hKiTJw0ArpUKxVMCupP4BqtxEqDQYqJL5buvvXERx3FmX4euhuUOiwjqrLucxWFHuhEhxe6A1c1CAHYQkkgzD9__6jcJopv_sgexCOO-MizSSU_yCkUzc9wodp3iS1VI5i8LNOM1fh8m6qUT8F5sGIf83GdDQxaBMSAhhSI4Q" // 有効な認証トークン
 	client := NewClient(baseURL, authToken)
 	return client
 }
@@ -44,6 +44,19 @@ func TestGetUser(t *testing.T) {
 
 	if user.Name != name {
 		t.Errorf("GetUser returned unexpected ID: got %v, want %v", user.Name, name)
+	}
+}
+
+func TestGetUsers(t *testing.T) {
+	client := setup()
+
+	users, err := client.GetUsers()
+	if err != nil {
+		t.Fatalf("GetUser failed: %v", err)
+	}
+
+	if users.Name != "" {
+		t.Errorf("GetUser returned unexpected ID: got %v, want %v", users.Name, users)
 	}
 }
 

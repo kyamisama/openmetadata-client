@@ -84,6 +84,32 @@ func (c *Client) GetUser(name string) (*GetUser, error) {
 	return &user, nil
 }
 
+// GetUser retrieves a user by ID from OpenMetadata
+func (c *Client) GetUsers() (*GetUser, error) {
+	req, err := c.newRequest("GET", "/", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get user, status code: %d", resp.StatusCode)
+	}
+
+	var user GetUser
+	err = json.NewDecoder(resp.Body).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 // UpdateUser updates an existing user in OpenMetadata
 func (c *Client) UpdateUser(user *UpdateUser) (*UpdateUser, error) {
 	// Initialize user data to send
