@@ -1,196 +1,139 @@
 package openmetadata
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-	"log"
 	"net/http"
+	"strings"
 )
 
 // CreateUser creates a new user in OpenMetadata
-func (c *Client) CreateUser(user *CreateUser) (*CreateUser, error) {
+func (c *Client) CreateUser(user CreateUser_req, authToken *string) (*CreateUser_res, error) {
 	// Initialize user data to send
-	postData := &CreateUser{
-		Name:        user.Name,
-		Email:       user.Email,
-		DisplayName: user.DisplayName,
-		Description: user.Description,
-		Password:    user.Password,
-	}
 
-	postJSON, err := json.Marshal(postData)
+	postJSON, err := json.Marshal(user)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal user data: %w", err)
 	}
-	fmt.Printf("[+] %s\n", string(postJSON))
 
-	req, err := http.NewRequest("POST", c.BaseURL+"/", bytes.NewBuffer(postJSON))
+	req, err := http.NewRequest("POST", c.BaseURL+"/api/v1/users/", strings.NewReader(string(postJSON)))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
-
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.AuthToken))
-	req.Header.Set("Content-Type", "application/json")
-	resp, err := c.HTTPClient.Do(req)
+	body, statusCode, err := c.doRequest(req, authToken)
 	if err != nil {
-		return nil, fmt.Errorf("failed to perform request: %w", err)
+		return nil, err
 	}
-	defer resp.Body.Close()
-
-	respBody, err := io.ReadAll(resp.Body)
+	// POST成功のレスポンスコードは201なので、StatusCreatedてエラーハンドリグする
+	if statusCode != http.StatusCreated {
+		return nil, fmt.Errorf("failed to create user, status code: %d, response: %s", statusCode, string(body))
+	}
+	createdUser := CreateUser_res{}
+	err = json.Unmarshal(body, &createdUser)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", err)
+		return nil, err
 	}
-	//fmt.Println(string(respBody))
-
-	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("failed to create user, status code: %d, response: %s", resp.StatusCode, string(respBody))
-	}
-
-	var createUser CreateUser
-	err = json.NewDecoder(bytes.NewReader(respBody)).Decode(&createUser)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode response body: %w", err)
-	}
-
-	return &createUser, nil
+	return &createdUser, nil
 }
 
 // GetUser retrieves a user by ID from OpenMetadata
-func (c *Client) GetUser(name string) (*GetUser, error) {
-	req, err := c.newRequest("GET", "/name/"+name, nil)
+func (c *Client) GetUser(name string, authToken *string) (*GetUser_res, error) {
+	req, err := http.NewRequest("GET", c.BaseURL+"/api/v1/users/name/"+name, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to get user, status code: %d", resp.StatusCode)
-	}
-
-	var user GetUser
-	err = json.NewDecoder(resp.Body).Decode(&user)
+	body, statusCode, err := c.doRequest(req, authToken)
 	if err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	if statusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get user, status code: %d", statusCode)
+	}
+
+	getUser := GetUser_res{}
+	err = json.Unmarshal(body, &getUser)
+	if err != nil {
+		return nil, err
+	}
+
+	return &getUser, nil
 }
 
 // GetUser retrieves a user by ID from OpenMetadata
-func (c *Client) GetUsers() ([]GetUser, error) {
-	req, err := c.newRequest("GET", "/", nil)
+func (c *Client) GetUsers(authToken *string) (*GetUsers_res, error) {
+	req, err := http.NewRequest("GET", c.BaseURL+"/api/v1/users", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to get user, status code: %d", resp.StatusCode)
-	}
-
-	type UsersResponse struct {
-		Data []GetUser `json:"data"`
-	}
-
-	var usersResponse UsersResponse
-	err = json.NewDecoder(resp.Body).Decode(&usersResponse)
+	body, statusCode, err := c.doRequest(req, authToken)
 	if err != nil {
 		return nil, err
 	}
 
-	return usersResponse.Data, nil
+	if statusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get user, status code: %d", statusCode)
+	}
+
+	getUsers := GetUsers_res{}
+	err = json.Unmarshal(body, &getUsers)
+	if err != nil {
+		return nil, err
+	}
+
+	return &getUsers, nil
 }
 
 // UpdateUser updates an existing user in OpenMetadata
-func (c *Client) UpdateUser(user *UpdateUser) (*UpdateUser, error) {
+func (c *Client) UpdateUser(user UpdateUser_req, authToken *string) (*UpdateUser_res, error) {
 	// Initialize user data to send
-	postData := &UpdateUser{
-		Name:        user.Name,
-		Email:       user.Email,
-		DisplayName: user.DisplayName,
-		Description: user.Description,
-		Password:    user.Password,
-	}
-	postJSON, err := json.Marshal(postData)
+	postJSON, err := json.Marshal(user)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal user data: %w", err)
 	}
-	fmt.Printf("[+] %s\n", string(postJSON))
 
-	req, err := http.NewRequest("PUT", c.BaseURL+"/", bytes.NewBuffer(postJSON))
+	req, err := http.NewRequest("PUT", c.BaseURL+"/api/v1/users", strings.NewReader(string(postJSON)))
 	if err != nil {
 		return nil, fmt.Errorf("failed to update request: %w", err)
 	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.AuthToken))
-	req.Header.Set("Content-Type", "application/json")
-	resp, err := c.HTTPClient.Do(req)
+
+	body, statusCode, err := c.doRequest(req, authToken)
 	if err != nil {
-		return nil, fmt.Errorf("failed to perform request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	//respBody, err := io.ReadAll(resp.Body)
-	//if err != nil {
-	//	return nil, fmt.Errorf("failed to read response body: %w", err)
-	//}
-
-	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
-		var apiError struct {
-			Code    int    `json:"code"`
-			Message string `json:"message"`
-		}
-		if err := json.NewDecoder(resp.Body).Decode(&apiError); err != nil {
-			return nil, fmt.Errorf("failed to decode error response: %w", err)
-		}
-		return nil, fmt.Errorf("failed to update user, status code: %d, error: %s", resp.StatusCode, apiError.Message)
+		return nil, err
 	}
 
-	var updatedUser UpdateUser
-	err = json.NewDecoder(resp.Body).Decode(&updatedUser)
+	if statusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to create user, status code: %d, response: %s", statusCode, string(body))
+	}
+	updatedUser := UpdateUser_res{}
+	err = json.Unmarshal(body, &updatedUser)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode response body: %w", err)
+		return nil, err
 	}
-	log.Println(&updatedUser)
 	return &updatedUser, nil
 }
 
 // DeleteUser deletes a user by ID from OpenMetadata
-func (c *Client) DeleteUser(name string) (*DeleteUser, error) {
-	req, err := c.newRequest("DELETE", "/name/"+name+"?hardDelete=true", nil)
+func (c *Client) DeleteUser(name string, authToken *string) error {
+	req, err := http.NewRequest("DELETE", c.BaseURL+"/api/v1/users/name/"+name, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
+	q := req.URL.Query()
+	q.Add("hardDelete", "true")
+	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.HTTPClient.Do(req)
+	body, statusCode, err := c.doRequest(req, authToken)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
-		var apiError struct {
-			Code    int    `json:"code"`
-			Message string `json:"message"`
-		}
-		if err := json.NewDecoder(resp.Body).Decode(&apiError); err != nil {
-			return nil, fmt.Errorf("failed to decode error response: %w", err)
-		}
-		return nil, fmt.Errorf("failed to delete user, status code: %d, error: %s", resp.StatusCode, apiError.Message)
+	// log.Println(statusCode)
+	if statusCode != http.StatusOK {
+		return fmt.Errorf("failed to deleted user, status code: %d, response: %s", statusCode, string(body))
 	}
 
 	// If status code is 204, return success without decoding
-	return nil, nil // Return nil because there's no user to return on successful deletion
+	return nil
 }

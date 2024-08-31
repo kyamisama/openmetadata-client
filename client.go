@@ -1,6 +1,8 @@
 package openmetadata
 
 import (
+	"fmt"
+	"io"
 	"net/http"
 	"time"
 )
@@ -33,4 +35,27 @@ func (c *Client) newRequest(method, path string, body interface{}) (*http.Reques
 	req.Header.Set("Content-Type", "application/json")
 
 	return req, nil
+}
+func (c *Client) doRequest(req *http.Request, authToken *string) ([]byte, int, error) {
+	token := c.AuthToken
+
+	if authToken != nil {
+		token = *authToken
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, res.StatusCode, err
+	}
+
+	return body, res.StatusCode, nil
 }
