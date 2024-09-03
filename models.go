@@ -88,3 +88,37 @@ type UpdateUser_res struct {
 type DeleteUser struct {
 	Name string `json:"name"`
 }
+
+type CreateDB_req struct {
+	Name        string `json:"name"`
+	ServiceType string `json:"serviceType"`
+	Description string `json:"description"`
+	DisplayName string `json:"displayName"`
+}
+
+type CreateDB_res struct {
+	ID                 string `json:"id"`
+	Name               string `json:"name"`
+	FullyQualifiedName string `json:"fullyQualifiedName"`
+	ServiceType        string `json:"serviceType"`
+	Description        string `json:"description"`
+	UpdatedBy          string `json:"updatedBy"`
+	Deleted            bool   `json:"deleted"`
+}
+
+type UpdateDB_req struct {
+	Name        string `json:"name"`
+	ServiceType string `json:"serviceType"`
+	Description string `json:"description"`
+	DisplayName string `json:"displayName"`
+}
+
+type UpdateDB_res struct {
+	ID                 string `json:"id"`
+	Name               string `json:"name"`
+	FullyQualifiedName string `json:"fullyQualifiedName"`
+	ServiceType        string `json:"serviceType"`
+	Description        string `json:"description"`
+	UpdatedBy          string `json:"updatedBy"`
+	Deleted            bool   `json:"deleted"`
+}
