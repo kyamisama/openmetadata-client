@@ -37,8 +37,8 @@ func (c *Client) CreateUser(user CreateUser_req, authToken *string) (*CreateUser
 }
 
 // GetUser retrieves a user by ID from OpenMetadata
-func (c *Client) GetUser(name string, authToken *string) (*GetUser_res, error) {
-	req, err := http.NewRequest("GET", c.BaseURL+"/api/v1/users/name/"+name, nil)
+func (c *Client) GetUser(id string, authToken *string) (*GetUser_res, error) {
+	req, err := http.NewRequest("GET", c.BaseURL+"/api/v1/users/"+id, nil)
 	if err != nil {
 		return nil, err
 	}
