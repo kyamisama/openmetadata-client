@@ -79,6 +79,7 @@ type UpdateUser_req struct {
 }
 
 type UpdateUser_res struct {
+	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	DisplayName string `json:"displayName"`
