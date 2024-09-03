@@ -57,6 +57,7 @@ type GetUser_req struct {
 }
 
 type GetUser_res struct {
+	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	DisplayName string `json:"displayName"`

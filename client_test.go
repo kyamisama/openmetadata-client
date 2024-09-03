@@ -87,14 +87,14 @@ func TestCreateUsers(t *testing.T) {
 func TestGetUser(t *testing.T) {
 	client := setup()
 
-	name := "john.doe" // 事前に作成したユーザーのNameを指定
-	user, err := client.GetUser(name, &client.AuthToken)
+	id := "8cf6a914-1b30-4258-871f-d25d6e586279" // 事前に作成したユーザーのNameを指定
+	user, err := client.GetUser(id, &client.AuthToken)
 	if err != nil {
 		t.Fatalf("GetUser failed: %v", err)
 	}
 
-	if user.Name != name {
-		t.Errorf("GetUser returned unexpected ID: got %v, want %v", user.Name, name)
+	if user.ID != id {
+		t.Errorf("GetUser returned unexpected ID: got %v, want %v", user.Name, id)
 	}
 }
 
