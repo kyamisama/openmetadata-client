@@ -5,11 +5,14 @@ import (
 	"testing"
 )
 
-// setup function to initialize the client
+// // setup function to initialize the client
 func setup() *Client {
 	baseURL := "http://192.168.0.19:8585"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             // OpenMetadataのAPIのベースURL
 	authToken := "eyJraWQiOiJHYjM4OWEtOWY3Ni1nZGpzLWE5MmotMDI0MmJrOTQzNTYiLCJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJvcGVuLW1ldGFkYXRhLm9yZyIsInN1YiI6ImMzNzNpc20iLCJyb2xlcyI6WyJBZG1pbiJdLCJlbWFpbCI6ImMzNzNpc21AZ21haWwuY29tIiwiaXNCb3QiOnRydWUsInRva2VuVHlwZSI6IkJPVCIsImlhdCI6MTcyMzUyNDM3MiwiZXhwIjoxNzMxMzAwMzcyfQ.nXk9xbyYUTMPiKA47o1ddS_XSuFLXw13OFnPLKQCxbOgMHQflmVz5inT3hpu5IbTOHDPlPP_UOz8-voWAqHwA9epJnMQd3EXawGANvdscXXDggyIIjsaFikQVvFWEaC1qTHjOBZVdrHSUOXab5fZ_2pKkJmFNDoP3ullzSKgNhrW8hKiTJw0ArpUKxVMCupP4BqtxEqDQYqJL5buvvXERx3FmX4euhuUOiwjqrLucxWFHuhEhxe6A1c1CAHYQkkgzD9__6jcJopv_sgexCOO-MizSSU_yCkUzc9wodp3iS1VI5i8LNOM1fh8m6qUT8F5sGIf83GdDQxaBMSAhhSI4Q" // 有効な認証トークン
-	client := NewClient(baseURL, authToken)
+	client, err := NewClient(&baseURL, &authToken)
+	if err != nil {
+		fmt.Printf("setup failed clent: %v", err)
+	}
 	return client
 }
 
@@ -19,7 +22,7 @@ func TestCreateDBService(t *testing.T) {
 	createdDB := CreateDB_req{
 		Name:        "Snowflake_DB",
 		ServiceType: "Snowflake",
-		Description: "snowflake",
+		// Description: "snowflake",
 		DisplayName: "Snowflake_DB",
 	}
 	createdDBService, err := client.CreateDBService(createdDB, &client.AuthToken)
@@ -32,31 +35,30 @@ func TestCreateDBService(t *testing.T) {
 	}
 }
 
-// func TestUpdateDBService(t *testing.T) {
-// 	client := setup()
+func TestUpdateDBService(t *testing.T) {
+	client := setup()
 
-// 	UpdateDB := UpdateDB_req{
-// 		Name:        "Snowflake_DB",
-// 		ServiceType: "Snowflake",
-// 		Description: "snowflake2024",
-// 		DisplayName: "Snowflake_DB2024",
-// 	}
-// 	updatedDBService, err := client.UpdateDBService(UpdateDB, &client.AuthToken)
-// 	if err != nil {
-// 		return
-// 	}
-// 	log.Println(updatedDBService.Description)
-// 	log.Println(UpdateDB.Description)
-// 	if updatedDBService.Description != UpdateDB.Description {
-// 		t.Errorf("UpdateDBService returned unexpected DB data: got %v, want %v", updatedDBService, UpdateDB)
-// 	}
-// }
+	UpdateDB := UpdateDB_req{
+		Name:        "Snowflake_DB",
+		ServiceType: "Snowflake",
+		Description: "snowflake2024",
+		DisplayName: "Snowflake_DB2024",
+	}
+	updatedDBService, err := client.UpdateDBService(UpdateDB, &client.AuthToken)
+	if err != nil {
+		return
+	}
+
+	if updatedDBService.Description != UpdateDB.Description {
+		t.Errorf("UpdateDBService returned unexpected DB data: got %v, want %v", updatedDBService, UpdateDB)
+	}
+}
 
 func TestDeleteDBService(t *testing.T) {
 	client := setup()
 
 	DBDeleteName := "Snowflake_DB"
-	err := client.DeleteDBService(DBDeleteName, &client.AuthToken)
+	_, err := client.DeleteDBService(DBDeleteName, &client.AuthToken)
 	if err != nil {
 		t.Fatalf("DeleteDBService failed: %v", err)
 	}
@@ -69,10 +71,10 @@ func TestCreateUsers(t *testing.T) {
 		Name:        "john.doe",
 		Email:       "john.doe@example.com",
 		DisplayName: "j.d",
-		Description: "hogehoge",
-		Password:    "P@ssW0rd",
-		Roles:       []string{"fa8521d3-d523-4d7f-8935-f7b8379aba2d"},
-		Teams:       []string{"fbbffde9-137b-4564-987d-367bcaed1ac4"},
+		//Description: "hogehoge",
+		Password: "P@ssW0rd",
+		Roles:    []string{"fa8521d3-d523-4d7f-8935-f7b8379aba2d"},
+		Teams:    []string{"3f9ddb39-84b2-40cd-a5a2-d2e50ca1f478"},
 	}
 
 	createdUser, err := client.CreateUser(newUser, &client.AuthToken)
@@ -87,7 +89,7 @@ func TestCreateUsers(t *testing.T) {
 func TestGetUser(t *testing.T) {
 	client := setup()
 
-	id := "8cf6a914-1b30-4258-871f-d25d6e586279" // 事前に作成したユーザーのNameを指定
+	id := "35a43337-9b25-41e0-a7d0-0177fd2a8214" // 事前に作成したユーザーのNameを指定
 	user, err := client.GetUser(id, &client.AuthToken)
 	if err != nil {
 		t.Fatalf("GetUser failed: %v", err)
@@ -121,8 +123,7 @@ func TestUpdateUser(t *testing.T) {
 	if err != nil {
 		t.Fatalf("UpdateUser failed: %v", err)
 	}
-	// log.Printf("Response Description: %s", res.Description)
-	// log.Printf("Update Data Description: %s", updateData.Description)
+
 	if res.Description == updateData.Description {
 		fmt.Println("ok")
 	} else {
@@ -135,7 +136,7 @@ func TestDeleteUser(t *testing.T) {
 	client := setup()
 
 	name := "john.doe" // 削除対象のユーザーName
-	err := client.DeleteUser(name, &client.AuthToken)
+	_, err := client.DeleteUser(name, &client.AuthToken)
 	if err != nil {
 		t.Fatalf("DeleteUser failed: %v", err)
 	}

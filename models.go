@@ -124,3 +124,13 @@ type UpdateDB_res struct {
 	UpdatedBy          string `json:"updatedBy"`
 	Deleted            bool   `json:"deleted"`
 }
+
+type DeleteDB struct {
+	ID                 string `json:"id"`
+	Name               string `json:"name"`
+	FullyQualifiedName string `json:"fullyQualifiedName"`
+	ServiceType        string `json:"serviceType"`
+	Description        string `json:"description"`
+	UpdatedBy          string `json:"updatedBy"`
+	Deleted            bool   `json:"deleted"`
+}
