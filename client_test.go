@@ -25,7 +25,7 @@ func TestCreateDBService(t *testing.T) {
 		// Description: "snowflake",
 		DisplayName: "Snowflake_DB",
 	}
-	createdDBService, err := client.CreateDBService(createdDB, client.AuthToken)
+	createdDBService, err := client.CreateDBService(createdDB, &client.AuthToken)
 	if err != nil {
 		t.Fatalf("CreatedDBService failed: %v", err)
 	}
@@ -44,7 +44,7 @@ func TestUpdateDBService(t *testing.T) {
 		Description: "snowflake2024",
 		DisplayName: "Snowflake_DB2024",
 	}
-	updatedDBService, err := client.UpdateDBService(UpdateDB, client.AuthToken)
+	updatedDBService, err := client.UpdateDBService(UpdateDB, &client.AuthToken)
 	if err != nil {
 		return
 	}
@@ -58,7 +58,7 @@ func TestDeleteDBService(t *testing.T) {
 	client := setup()
 
 	DBDeleteName := "Snowflake_DB"
-	_, err := client.DeleteDBService(DBDeleteName, client.AuthToken)
+	_, err := client.DeleteDBService(DBDeleteName, &client.AuthToken)
 	if err != nil {
 		t.Fatalf("DeleteDBService failed: %v", err)
 	}
@@ -77,7 +77,7 @@ func TestCreateUsers(t *testing.T) {
 		Teams:    []string{"3f9ddb39-84b2-40cd-a5a2-d2e50ca1f478"},
 	}
 
-	createdUser, err := client.CreateUser(newUser, client.AuthToken)
+	createdUser, err := client.CreateUser(newUser, &client.AuthToken)
 	if err != nil {
 		t.Fatalf("CreatedUsers failed: %v", err)
 	}
@@ -90,7 +90,7 @@ func TestGetUser(t *testing.T) {
 	client := setup()
 
 	id := "35a43337-9b25-41e0-a7d0-0177fd2a8214" // 事前に作成したユーザーのNameを指定
-	user, err := client.GetUser(id, client.AuthToken)
+	user, err := client.GetUser(id, &client.AuthToken)
 	if err != nil {
 		t.Fatalf("GetUser failed: %v", err)
 	}
@@ -103,7 +103,7 @@ func TestGetUser(t *testing.T) {
 func TestGetUsers(t *testing.T) {
 	client := setup()
 
-	_, err := client.GetUsers(client.AuthToken)
+	_, err := client.GetUsers(&client.AuthToken)
 	if err != nil {
 		t.Fatalf("GetUser failed: %v", err)
 	}
@@ -119,7 +119,7 @@ func TestUpdateUser(t *testing.T) {
 		Description: "hogehoge2222",
 	}
 
-	res, err := client.UpdateUser(updateData, client.AuthToken)
+	res, err := client.UpdateUser(updateData, &client.AuthToken)
 	if err != nil {
 		t.Fatalf("UpdateUser failed: %v", err)
 	}
@@ -136,7 +136,7 @@ func TestDeleteUser(t *testing.T) {
 	client := setup()
 
 	name := "john.doe" // 削除対象のユーザーName
-	_, err := client.DeleteUser(name, client.AuthToken)
+	_, err := client.DeleteUser(name, &client.AuthToken)
 	if err != nil {
 		t.Fatalf("DeleteUser failed: %v", err)
 	}

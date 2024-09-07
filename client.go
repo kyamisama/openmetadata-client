@@ -2,6 +2,7 @@ package openmetadata
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -14,7 +15,7 @@ const HostURL string = "http://192.168.0.19:8585"
 type Client struct {
 	BaseURL    string
 	HTTPClient *http.Client
-	AuthToken  *string
+	AuthToken  string
 }
 
 // NewClient initializes and returns a new OpenMetadata API client
@@ -27,8 +28,9 @@ func NewClient(baseURL, authToken *string) (*Client, error) {
 		c.BaseURL = *baseURL
 	}
 	if authToken != nil {
-		c.AuthToken = authToken
+		c.AuthToken = *authToken
 	}
+
 	return &c, nil
 }
 
@@ -47,7 +49,7 @@ func (c *Client) newRequest(method, url string, authToken *string, body io.Reade
 	default:
 		req.Header.Set("Content-Type", "application/json") // デフォルトでJSONとする
 	}
-	req.Header.Set("Authorization", "Bearer "+*authToken)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.AuthToken))
 
 	return req, nil
 }
