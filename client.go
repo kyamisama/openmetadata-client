@@ -45,7 +45,7 @@ func (c *Client) newRequest(method, url string, authToken *string, body io.Reade
 	case "POST", "PUT":
 		req.Header.Set("Content-Type", "application/json")
 	case "PATCH":
-		req.Header.Set("Content-Type", "application/merge-patch+json")
+		req.Header.Set("Content-Type", "application/json-patch+json")
 	default:
 		req.Header.Set("Content-Type", "application/json") // デフォルトでJSONとする
 	}
@@ -73,18 +73,3 @@ func decodeBody(resp *http.Response, out interface{}) error {
 	decoder := json.NewDecoder(resp.Body)
 	return decoder.Decode(out)
 }
-
-// func (c *Client) doRequest(req *http.Request) ([]byte, int, error) {
-// 	res, err := c.HTTPClient.Do(req)
-// 	if err != nil {
-// 		return nil, 0, err
-// 	}
-// 	defer res.Body.Close()
-
-// 	body, err := io.ReadAll(res.Body)
-// 	if err != nil {
-// 		return nil, res.StatusCode, err
-// 	}
-
-// 	return body, res.StatusCode, nil
-// }

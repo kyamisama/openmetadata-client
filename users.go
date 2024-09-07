@@ -82,6 +82,7 @@ func (c *Client) UpdateUser(user UpdateUser_req, authToken *string) (*UpdateUser
 	if err != nil {
 		return nil, fmt.Errorf("failed to update request: %w", err)
 	}
+
 	var updateUser_res UpdateUser_res
 	statusCode, err := c.doRequest(req, &updateUser_res)
 	if err != nil {
@@ -93,6 +94,29 @@ func (c *Client) UpdateUser(user UpdateUser_req, authToken *string) (*UpdateUser
 	}
 
 	return &updateUser_res, nil
+}
+
+func (c *Client) PatchUser(patchdata PatchUser_req, id string, authToken *string) (*PatchUser_res, error) {
+	postJSON, err := json.Marshal([]PatchUser_req{patchdata})
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal user data: %w", err)
+	}
+	req, err := c.newRequest("PATCH", c.BaseURL+"/api/v1/users/"+id, authToken, strings.NewReader(string(postJSON)))
+	if err != nil {
+		return nil, fmt.Errorf("failed to patch request: %w", err)
+	}
+
+	var patchUser_res PatchUser_res
+	statusCode, err := c.doRequest(req, &patchUser_res)
+	if err != nil {
+		return nil, err
+	}
+
+	if statusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to patch user, status code: %d", statusCode)
+	}
+
+	return &patchUser_res, nil
 }
 
 // DeleteUser deletes a user by ID from OpenMetadata

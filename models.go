@@ -86,7 +86,18 @@ type UpdateUser_res struct {
 	Description string `json:"description"`
 	Password    string `json:"password"`
 }
-
+type PatchUser_req struct {
+	Op    string      `json:"op"`
+	Path  string      `json:"path"`
+	Value interface{} `json:"value"`
+}
+type PatchUser_res struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	DisplayName string `json:"displayName"`
+	Description string `json:"description"`
+}
 type DeleteUser struct {
 	Name string `json:"name"`
 }

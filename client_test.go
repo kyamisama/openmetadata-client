@@ -89,7 +89,7 @@ func TestCreateUsers(t *testing.T) {
 func TestGetUser(t *testing.T) {
 	client := setup()
 
-	id := "35a43337-9b25-41e0-a7d0-0177fd2a8214" // 事前に作成したユーザーのNameを指定
+	id := "f40054a6-dcde-4b87-a318-03bcab048cf0" // 事前に作成したユーザーのNameを指定
 	user, err := client.GetUser(id, &client.AuthToken)
 	if err != nil {
 		t.Fatalf("GetUser failed: %v", err)
@@ -130,6 +130,27 @@ func TestUpdateUser(t *testing.T) {
 		fmt.Println("not ok")
 	}
 
+}
+
+func TestPatchUser(t *testing.T) {
+	client := setup()
+
+	patchData := PatchUser_req{
+		Op:    "replace",
+		Path:  "/isAdmin",
+		Value: false,
+	}
+	id := "f40054a6-dcde-4b87-a318-03bcab048cf0"
+	res, err := client.PatchUser(patchData, id, &client.AuthToken)
+	if err != nil {
+		t.Fatalf("PatchUser failed: %v", err)
+	}
+
+	if res.Description == patchData.Value {
+		fmt.Println("ok")
+	} else {
+		fmt.Println("not ok")
+	}
 }
 
 func TestDeleteUser(t *testing.T) {
