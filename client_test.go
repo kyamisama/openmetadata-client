@@ -2,6 +2,7 @@ package openmetadata
 
 import (
 	"fmt"
+	"log"
 	"testing"
 )
 
@@ -135,10 +136,27 @@ func TestUpdateUser(t *testing.T) {
 func TestPatchUser(t *testing.T) {
 	client := setup()
 
-	patchData := PatchUser_req{
-		Op:    "replace",
-		Path:  "/isAdmin",
-		Value: false,
+	patchData := []PatchUser_req{
+		{
+			Op:    "replace",
+			Path:  "/isAdmin",
+			Value: true,
+		},
+		{
+			Op:    "replace",
+			Path:  "/description",
+			Value: "hogehogepatch",
+		},
+		{
+			Op:    "add",
+			Path:  "/displayName",
+			Value: "hogehoge",
+		},
+		{
+			Op:    "remove",
+			Path:  "/displayName",
+			Value: "",
+		},
 	}
 	id := "f40054a6-dcde-4b87-a318-03bcab048cf0"
 	res, err := client.PatchUser(patchData, id, &client.AuthToken)
@@ -146,10 +164,12 @@ func TestPatchUser(t *testing.T) {
 		t.Fatalf("PatchUser failed: %v", err)
 	}
 
-	if res.Description == patchData.Value {
-		fmt.Println("ok")
-	} else {
-		fmt.Println("not ok")
+	if res.IsAdmin != true {
+		t.Errorf("Expected IsAdmin to be true, got %v", res.IsAdmin)
+	}
+	log.Println(res.DisplayName)
+	if res.Description != "hogehogepatch" {
+		t.Errorf("Expected Description to be 'hogehogepatch', got %v", res.Description)
 	}
 }
 

@@ -96,8 +96,8 @@ func (c *Client) UpdateUser(user UpdateUser_req, authToken *string) (*UpdateUser
 	return &updateUser_res, nil
 }
 
-func (c *Client) PatchUser(patchdata PatchUser_req, id string, authToken *string) (*PatchUser_res, error) {
-	postJSON, err := json.Marshal([]PatchUser_req{patchdata})
+func (c *Client) PatchUser(patchdata []PatchUser_req, id string, authToken *string) (*PatchUser_res, error) {
+	postJSON, err := json.Marshal(patchdata)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal user data: %w", err)
 	}

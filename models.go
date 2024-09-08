@@ -97,6 +97,7 @@ type PatchUser_res struct {
 	Email       string `json:"email"`
 	DisplayName string `json:"displayName"`
 	Description string `json:"description"`
+	IsAdmin     bool   `json:"isAdmin"`
 }
 type DeleteUser struct {
 	Name string `json:"name"`
