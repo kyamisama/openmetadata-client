@@ -52,12 +52,12 @@ func (c *Client) GetUser(id string, authToken *string) (*GetUser_res, error) {
 }
 
 // GetUser retrieves a user by ID from OpenMetadata
-func (c *Client) GetUsers(authToken *string) (*GetUsers_res, error) {
+func (c *Client) GetUsers(authToken *string) (*GetUsersRes, error) {
 	req, err := c.newRequest("GET", c.BaseURL+"/api/v1/users/", authToken, nil)
 	if err != nil {
 		return nil, err
 	}
-	var getUsers GetUsers_res
+	var getUsers GetUsersRes
 	statusCode, err := c.doRequest(req, &getUsers)
 	if err != nil {
 		return nil, err

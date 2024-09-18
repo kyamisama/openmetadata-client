@@ -22,13 +22,13 @@ type CreateUser_res struct {
 	Email              string          `json:"email"`
 	IsBot              bool            `json:"isBot"`
 	IsAdmin            bool            `json:"isAdmin"`
-	Teams              []team_role     `json:"teams"`
-	Roles              []team_role     `json:"roles"`
-	InheritedRoles     []inheritedRole `json:"inheritedRole"`
+	Teams              []Team_role     `json:"teams"`
+	Roles              []Team_role     `json:"roles"`
+	InheritedRoles     []InheritedRole `json:"inheritedRole"`
 	Deleted            bool            `json:"deleted"`
 }
 
-type team_role struct {
+type Team_role struct {
 	ID                 string `json:"id"`
 	Type               string `json:"type"`
 	Name               string `json:"name"`
@@ -38,7 +38,7 @@ type team_role struct {
 	Href               string `json:"href"`
 }
 
-type inheritedRole struct {
+type InheritedRole struct {
 	ID                 string `json:"id"`
 	Type               string `json:"type"`
 	Name               string `json:"name"`
@@ -64,7 +64,11 @@ type GetUser_res struct {
 	Description string `json:"description"`
 }
 
-type GetUsers_res struct {
+type GetUsersRes struct {
+	Data   []Team `json:"data"`
+	Paging Paging `json:"paging"`
+}
+type Users struct {
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	DisplayName string `json:"displayName"`
@@ -75,7 +79,6 @@ type UpdateUser_req struct {
 	Email       string `json:"email"`
 	DisplayName string `json:"displayName"`
 	Description string `json:"description"`
-	Password    string `json:"password"`
 }
 
 type UpdateUser_res struct {
@@ -84,7 +87,6 @@ type UpdateUser_res struct {
 	Email       string `json:"email"`
 	DisplayName string `json:"displayName"`
 	Description string `json:"description"`
-	Password    string `json:"password"`
 }
 type PatchUser_req struct {
 	Op    string      `json:"op"`
@@ -137,7 +139,7 @@ type UpdateDB_res struct {
 	Deleted            bool   `json:"deleted"`
 }
 
-type DeleteDB struct {
+type DeleteDBRes struct {
 	ID                 string `json:"id"`
 	Name               string `json:"name"`
 	FullyQualifiedName string `json:"fullyQualifiedName"`
@@ -145,4 +147,62 @@ type DeleteDB struct {
 	Description        string `json:"description"`
 	UpdatedBy          string `json:"updatedBy"`
 	Deleted            bool   `json:"deleted"`
+}
+
+type CreateTeamReq struct {
+	Description string   `json:"description"`
+	DisplayName string   `json:"displayName"`
+	TeamType    string   `json:"teamType"`
+	Name        string   `json:"name"`
+	Policies    []string `json:"policies"`
+}
+type CreateTeamRes struct {
+	ID          string      `json:"id"`
+	Description string      `json:"description"`
+	DisplayName string      `json:"displayName"`
+	TeamType    string      `json:"teamType"`
+	Name        string      `json:"name"`
+	Policies    []Team_role `json:"policies"`
+}
+
+type DeteleTeamRes struct {
+	ID             string          `json:"id"`
+	Description    string          `json:"description"`
+	DisplayName    string          `json:"displayName"`
+	TeamType       string          `json:"teamType"`
+	Name           string          `json:"name"`
+	InheritedRoles []InheritedRole `json:"inheritedRole"`
+	Policies       []Team_role     `json:"policies"`
+}
+
+type Paging struct {
+	Total int `json:"total"`
+}
+
+type GetTeamsRes struct {
+	Data   []Team `json:"data"`
+	Paging Paging `json:"paging"`
+}
+type Team struct {
+	ID             string          `json:"id"`
+	Description    string          `json:"description"`
+	DisplayName    string          `json:"displayName"`
+	TeamType       string          `json:"teamType"`
+	Name           string          `json:"name"`
+	InheritedRoles []InheritedRole `json:"inheritedRole"`
+	Policies       []Team_role     `json:"policies"`
+}
+type PatchTeamReq struct {
+	Op    string      `json:"op"`
+	Path  string      `json:"path"`
+	Value interface{} `json:"value"`
+}
+type PatchTeamRes struct {
+	ID             string          `json:"id"`
+	Description    string          `json:"description"`
+	DisplayName    string          `json:"displayName"`
+	TeamType       string          `json:"teamType"`
+	Name           string          `json:"name"`
+	InheritedRoles []InheritedRole `json:"inheritedRole"`
+	Policies       []Team_role     `json:"policies"`
 }

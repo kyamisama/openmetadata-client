@@ -50,7 +50,7 @@ func (c *Client) UpdateDBService(db UpdateDB_req, authToken *string) (*UpdateDB_
 	return &updateDB_res, nil
 }
 
-func (c *Client) DeleteDBService(name string, authToken *string) (*DeleteDB, error) {
+func (c *Client) DeleteDBService(name string, authToken *string) (*DeleteDBRes, error) {
 	req, err := c.newRequest("DELETE", c.BaseURL+"/api/v1/services/databaseServices/name/"+name, authToken, nil)
 	if err != nil {
 		return nil, err
@@ -58,8 +58,8 @@ func (c *Client) DeleteDBService(name string, authToken *string) (*DeleteDB, err
 	q := req.URL.Query()
 	q.Add("hardDelete", "true")
 	req.URL.RawQuery = q.Encode()
-	var deleteDB DeleteDB
-	statusCode, err := c.doRequest(req, &deleteDB)
+	var deleteDBRes DeleteDBRes
+	statusCode, err := c.doRequest(req, &deleteDBRes)
 	if err != nil {
 		return nil, err
 	}
@@ -67,5 +67,5 @@ func (c *Client) DeleteDBService(name string, authToken *string) (*DeleteDB, err
 	if statusCode != http.StatusOK {
 		return nil, fmt.Errorf("failed to deleted DBService, status code: %d", statusCode)
 	}
-	return &deleteDB, nil
+	return &deleteDBRes, nil
 }

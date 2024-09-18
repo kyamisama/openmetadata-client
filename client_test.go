@@ -2,7 +2,6 @@ package openmetadata
 
 import (
 	"fmt"
-	"log"
 	"testing"
 )
 
@@ -104,9 +103,14 @@ func TestGetUser(t *testing.T) {
 func TestGetUsers(t *testing.T) {
 	client := setup()
 
-	_, err := client.GetUsers(&client.AuthToken)
+	clientRes, err := client.GetUsers(&client.AuthToken)
 	if err != nil {
 		t.Fatalf("GetUser failed: %v", err)
+	}
+	for _, team := range clientRes.Data {
+		if team.Name == "john.doe" {
+			fmt.Println("ok")
+		}
 	}
 }
 
@@ -158,6 +162,7 @@ func TestPatchUser(t *testing.T) {
 			Value: "",
 		},
 	}
+	// log.Println(patchData)
 	id := "f40054a6-dcde-4b87-a318-03bcab048cf0"
 	res, err := client.PatchUser(patchData, id, &client.AuthToken)
 	if err != nil {
@@ -167,7 +172,7 @@ func TestPatchUser(t *testing.T) {
 	if res.IsAdmin != true {
 		t.Errorf("Expected IsAdmin to be true, got %v", res.IsAdmin)
 	}
-	log.Println(res.DisplayName)
+	// log.Println(res.DisplayName)
 	if res.Description != "hogehogepatch" {
 		t.Errorf("Expected Description to be 'hogehogepatch', got %v", res.Description)
 	}
@@ -182,4 +187,90 @@ func TestDeleteUser(t *testing.T) {
 		t.Fatalf("DeleteUser failed: %v", err)
 	}
 
+}
+
+func TestCreateTeam(t *testing.T) {
+	client := setup()
+	createTeam := CreateTeamReq{
+		Name:        "testTeam",
+		TeamType:    "Group",
+		Description: "testDesc",
+		DisplayName: "testDisp",
+		Policies:    []string{"e481b473-7043-4561-83b4-ef7ae372f80a"},
+	}
+	createdTeam, err := client.CreateTeam(createTeam, &client.AuthToken)
+	if err != nil {
+		t.Fatalf("CreatedTeam failed: %v", err)
+	}
+
+	if createdTeam.Name != createTeam.Name || createdTeam.TeamType != createTeam.TeamType {
+		t.Errorf("CreateUser returned unexpected user data: got %v, want %v", createdTeam, createTeam)
+	}
+}
+
+func TestGetTeams(t *testing.T) {
+	client := setup()
+	clientRes, err := client.GetTeams(&client.AuthToken)
+	if err != nil {
+		t.Fatalf("GetTeams failed: %v", err)
+	}
+
+	for _, team := range clientRes.Data {
+		if team.Name == "testTeam" {
+			fmt.Println("ok")
+		}
+	}
+}
+
+func TestDeleteTeam(t *testing.T) {
+	client := setup()
+	clientRes, err := client.GetTeams(&client.AuthToken)
+	if err != nil {
+		t.Fatalf("GetTeams failed: %v", err)
+	}
+
+	for _, team := range clientRes.Data {
+		if team.Name == "testTeam" {
+			_, err := client.DeleteTeam(team.ID, &client.AuthToken)
+			if err != nil {
+				t.Fatalf("DeleteTeam failed: %v", err)
+			}
+		}
+	}
+}
+func TestPatchTeam(t *testing.T) {
+	client := setup()
+
+	patchData := []PatchTeamReq{
+		{
+			Op:    "replace",
+			Path:  "/description",
+			Value: "hogehogepatch",
+		},
+		{
+			Op:    "add",
+			Path:  "/displayName",
+			Value: "hogehoge",
+		},
+		{
+			Op:    "remove",
+			Path:  "/displayName",
+			Value: "",
+		},
+	}
+	clientRes, err := client.GetTeams(&client.AuthToken)
+	if err != nil {
+		t.Fatalf("GetTeams failed: %v", err)
+	}
+	for _, team := range clientRes.Data {
+		if team.Name == "testTeam" {
+			res, err := client.PatchTeam(patchData, team.ID, &client.AuthToken)
+			if err != nil {
+				t.Fatalf("PatchUser failed: %v", err)
+			}
+			if res.Description != "hogehogepatch" {
+				t.Errorf("Expected Description to be 'hogehogepatch', got %v", res.Description)
+			}
+		}
+	}
 }
