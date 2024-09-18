@@ -51,6 +51,25 @@ func (c *Client) DeleteTeam(id string, authToken *string) (*DeteleTeamRes, error
 	return &deleteTeam, nil
 }
 
+// GetTeam retrieves a user by ID from OpenMetadata
+func (c *Client) GetTeam(id string, authToken *string) (*GetTeamRes, error) {
+	req, err := c.newRequest("GET", c.BaseURL+"/api/v1/teams/"+id, authToken, nil)
+	if err != nil {
+		return nil, err
+	}
+	var getTeam GetTeamRes
+	statusCode, err := c.doRequest(req, &getTeam)
+	if err != nil {
+		return nil, err
+	}
+
+	if statusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get team, status code: %d", statusCode)
+	}
+
+	return &getTeam, nil
+}
+
 func (c *Client) GetTeams(authToken *string) (*GetTeamsRes, error) {
 	req, err := c.newRequest("GET", c.BaseURL+"/api/v1/teams/", authToken, nil)
 	if err != nil {

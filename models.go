@@ -175,6 +175,14 @@ type DeteleTeamRes struct {
 	Policies       []Team_role     `json:"policies"`
 }
 
+type GetTeamRes struct {
+	ID          string `json:"id"`
+	Description string `json:"description"`
+	DisplayName string `json:"displayName"`
+	TeamType    string `json:"teamType"`
+	Name        string `json:"name"`
+}
+
 type Paging struct {
 	Total int `json:"total"`
 }

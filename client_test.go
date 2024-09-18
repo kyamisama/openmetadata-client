@@ -274,3 +274,16 @@ func TestPatchTeam(t *testing.T) {
 		}
 	}
 }
+func TestGetTeam(t *testing.T) {
+	client := setup()
+
+	id := "3f9ddb39-84b2-40cd-a5a2-d2e50ca1f478"
+	user, err := client.GetTeam(id, &client.AuthToken)
+	if err != nil {
+		t.Fatalf("GetTeam failed: %v", err)
+	}
+
+	if user.ID != id {
+		t.Errorf("GetTeam returned unexpected ID: got %v, want %v", user.Name, id)
+	}
+}
