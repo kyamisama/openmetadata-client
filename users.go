@@ -8,7 +8,7 @@ import (
 )
 
 // CreateUser creates a new user in OpenMetadata
-func (c *Client) CreateUser(user CreateUser_req, authToken *string) (*CreateUser_res, error) {
+func (c *Client) CreateUser(user CreateUserReq, authToken *string) (*CreateUserRes, error) {
 	// Initialize user data to send
 	postJSON, err := json.Marshal(user)
 	if err != nil {
@@ -20,7 +20,7 @@ func (c *Client) CreateUser(user CreateUser_req, authToken *string) (*CreateUser
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
-	var createUser_res CreateUser_res
+	var createUser_res CreateUserRes
 	statusCode, err := c.doRequest(req, &createUser_res)
 	if err != nil {
 		return nil, err
@@ -33,12 +33,16 @@ func (c *Client) CreateUser(user CreateUser_req, authToken *string) (*CreateUser
 }
 
 // GetUser retrieves a user by ID from OpenMetadata
-func (c *Client) GetUser(id string, authToken *string) (*GetUser_res, error) {
+func (c *Client) GetUser(id string, authToken *string) (*GetUserRes, error) {
 	req, err := c.newRequest("GET", c.BaseURL+"/api/v1/users/"+id, authToken, nil)
 	if err != nil {
 		return nil, err
 	}
-	var getUser GetUser_res
+	fields := []string{"profile", "roles", "teams", "follows", "personas", "defaultPersona"}
+	q := req.URL.Query()
+	q.Add("fields", strings.Join(fields, ","))
+	req.URL.RawQuery = q.Encode()
+	var getUser GetUserRes
 	statusCode, err := c.doRequest(req, &getUser)
 	if err != nil {
 		return nil, err
@@ -71,7 +75,7 @@ func (c *Client) GetUsers(authToken *string) (*GetUsersRes, error) {
 }
 
 // UpdateUser updates an existing user in OpenMetadata
-func (c *Client) UpdateUser(user UpdateUser_req, authToken *string) (*UpdateUser_res, error) {
+func (c *Client) UpdateUser(user UpdateUserReq, authToken *string) (*UpdateUserRes, error) {
 	// Initialize user data to send
 	postJSON, err := json.Marshal(user)
 	if err != nil {
@@ -83,7 +87,7 @@ func (c *Client) UpdateUser(user UpdateUser_req, authToken *string) (*UpdateUser
 		return nil, fmt.Errorf("failed to update request: %w", err)
 	}
 
-	var updateUser_res UpdateUser_res
+	var updateUser_res UpdateUserRes
 	statusCode, err := c.doRequest(req, &updateUser_res)
 	if err != nil {
 		return nil, err
@@ -96,7 +100,7 @@ func (c *Client) UpdateUser(user UpdateUser_req, authToken *string) (*UpdateUser
 	return &updateUser_res, nil
 }
 
-func (c *Client) PatchUser(patchdata []PatchUser_req, id string, authToken *string) (*PatchUser_res, error) {
+func (c *Client) PatchUser(patchdata []PatchUserReq, id string, authToken *string) (*PatchUserRes, error) {
 	postJSON, err := json.Marshal(patchdata)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal user data: %w", err)
@@ -106,7 +110,7 @@ func (c *Client) PatchUser(patchdata []PatchUser_req, id string, authToken *stri
 		return nil, fmt.Errorf("failed to patch request: %w", err)
 	}
 
-	var patchUser_res PatchUser_res
+	var patchUser_res PatchUserRes
 	statusCode, err := c.doRequest(req, &patchUser_res)
 	if err != nil {
 		return nil, err

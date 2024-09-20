@@ -1,7 +1,7 @@
 package openmetadata
 
 // CreateUser call api request struct in OpenMetadata
-type CreateUser_req struct {
+type CreateUserReq struct {
 	Description string   `json:"description"`
 	DisplayName string   `json:"displayName"`
 	Email       string   `json:"email"`
@@ -12,33 +12,61 @@ type CreateUser_req struct {
 }
 
 // CreateUser call api response struct in OpenMetadata
-type CreateUser_res struct {
-	ID                 string          `json:"id"`
-	Name               string          `json:"name"`
-	FullyQualifiedName string          `json:"fullyQualifiedName"`
-	Version            float64         `json:"version"`
-	UpdatedAt          int             `json:"updatedAt"`
-	UpdatedBy          string          `json:"updatedBy"`
-	Email              string          `json:"email"`
-	IsBot              bool            `json:"isBot"`
-	IsAdmin            bool            `json:"isAdmin"`
-	Teams              []Team_role     `json:"teams"`
-	Roles              []Team_role     `json:"roles"`
-	InheritedRoles     []InheritedRole `json:"inheritedRole"`
-	Deleted            bool            `json:"deleted"`
+type CreateUserRes struct {
+	ID                 string    `json:"id"`
+	Name               string    `json:"name"`
+	FullyQualifiedName string    `json:"fullyQualifiedName"`
+	Version            float64   `json:"version"`
+	UpdatedAt          int       `json:"updatedAt"`
+	UpdatedBy          string    `json:"updatedBy"`
+	Email              string    `json:"email"`
+	IsBot              bool      `json:"isBot"`
+	IsAdmin            bool      `json:"isAdmin"`
+	Teams              []TeamRes `json:"teams"`
+	Roles              []RoleRes `json:"roles"`
+	InheritedRoles     []RoleRes `json:"inheritedRole"`
+	Deleted            bool      `json:"deleted"`
 }
 
-type Team_role struct {
+// GetUserの引数はIDを指定するため、リクエストボディ用の構造体は不要
+type GetUserRes struct {
+	ID                 string        `json:"id"`
+	Name               string        `json:"name"`
+	FullyQualifiedName string        `json:"fullyQualifiedName"`
+	Description        string        `json:"description"`
+	DisplayName        string        `json:"displayName"`
+	Version            float64       `json:"version"`
+	UpdatedAt          int64         `json:"updatedAt"`
+	UpdatedBy          string        `json:"updatedBy"`
+	Email              string        `json:"email"`
+	Href               string        `json:"href"`
+	IsBot              bool          `json:"isBot"`
+	IsAdmin            bool          `json:"isAdmin"`
+	Teams              []TeamRes     `json:"teams"`
+	Deleted            bool          `json:"deleted"`
+	Personas           []PersonasRes `json:"personas"`
+	Roles              []RoleRes     `json:"roles"`
+	InheritedRoles     []RoleRes     `json:"inheritedRoles"`
+}
+type PersonasRes struct {
 	ID                 string `json:"id"`
 	Type               string `json:"type"`
 	Name               string `json:"name"`
 	FullyQualifiedName string `json:"fullyQualifiedName"`
+	Description        string `json:"description"`
 	DisplayName        string `json:"displayName"`
-	Deleted            bool   `json:"deleted"`
-	Href               string `json:"href"`
+}
+type TeamRes struct {
+	ID                 string `json:"id"`
+	Type               string `json:"type"`
+	Name               string `json:"name"`
+	FullyQualifiedName string `json:"fullyQualifiedName"`
+	Description        string `json:"description"`
+	DisplayName        string `json:"displayName"`
 }
 
-type InheritedRole struct {
+// InheritedRolesもふくむ
+type RoleRes struct {
 	ID                 string `json:"id"`
 	Type               string `json:"type"`
 	Name               string `json:"name"`
@@ -49,24 +77,9 @@ type InheritedRole struct {
 	Href               string `json:"href"`
 }
 
-type GetUser_req struct {
-	Name        string `json:"name"`
-	Email       string `json:"email"`
-	DisplayName string `json:"displayName"`
-	Description string `json:"description"`
-}
-
-type GetUser_res struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Email       string `json:"email"`
-	DisplayName string `json:"displayName"`
-	Description string `json:"description"`
-}
-
 type GetUsersRes struct {
-	Data   []Team `json:"data"`
-	Paging Paging `json:"paging"`
+	Data   []TeamRes `json:"data"`
+	Paging Paging    `json:"paging"`
 }
 type Users struct {
 	Name        string `json:"name"`
@@ -74,26 +87,26 @@ type Users struct {
 	DisplayName string `json:"displayName"`
 	Description string `json:"description"`
 }
-type UpdateUser_req struct {
+type UpdateUserReq struct {
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	DisplayName string `json:"displayName"`
 	Description string `json:"description"`
 }
 
-type UpdateUser_res struct {
+type UpdateUserRes struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	DisplayName string `json:"displayName"`
 	Description string `json:"description"`
 }
-type PatchUser_req struct {
+type PatchUserReq struct {
 	Op    string      `json:"op"`
 	Path  string      `json:"path"`
 	Value interface{} `json:"value"`
 }
-type PatchUser_res struct {
+type PatchUserRes struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
@@ -105,14 +118,14 @@ type DeleteUser struct {
 	Name string `json:"name"`
 }
 
-type CreateDB_req struct {
+type CreateDBReq struct {
 	Name        string `json:"name"`
 	ServiceType string `json:"serviceType"`
 	Description string `json:"description"`
 	DisplayName string `json:"displayName"`
 }
 
-type CreateDB_res struct {
+type CreateDBRes struct {
 	ID                 string `json:"id"`
 	Name               string `json:"name"`
 	FullyQualifiedName string `json:"fullyQualifiedName"`
@@ -122,14 +135,14 @@ type CreateDB_res struct {
 	Deleted            bool   `json:"deleted"`
 }
 
-type UpdateDB_req struct {
+type UpdateDBReq struct {
 	Name        string `json:"name"`
 	ServiceType string `json:"serviceType"`
 	Description string `json:"description"`
 	DisplayName string `json:"displayName"`
 }
 
-type UpdateDB_res struct {
+type UpdateDBRes struct {
 	ID                 string `json:"id"`
 	Name               string `json:"name"`
 	FullyQualifiedName string `json:"fullyQualifiedName"`
@@ -157,22 +170,22 @@ type CreateTeamReq struct {
 	Policies    []string `json:"policies"`
 }
 type CreateTeamRes struct {
-	ID          string      `json:"id"`
-	Description string      `json:"description"`
-	DisplayName string      `json:"displayName"`
-	TeamType    string      `json:"teamType"`
-	Name        string      `json:"name"`
-	Policies    []Team_role `json:"policies"`
+	ID          string    `json:"id"`
+	Description string    `json:"description"`
+	DisplayName string    `json:"displayName"`
+	TeamType    string    `json:"teamType"`
+	Name        string    `json:"name"`
+	Policies    []TeamRes `json:"policies"`
 }
 
 type DeteleTeamRes struct {
-	ID             string          `json:"id"`
-	Description    string          `json:"description"`
-	DisplayName    string          `json:"displayName"`
-	TeamType       string          `json:"teamType"`
-	Name           string          `json:"name"`
-	InheritedRoles []InheritedRole `json:"inheritedRole"`
-	Policies       []Team_role     `json:"policies"`
+	ID             string    `json:"id"`
+	Description    string    `json:"description"`
+	DisplayName    string    `json:"displayName"`
+	TeamType       string    `json:"teamType"`
+	Name           string    `json:"name"`
+	InheritedRoles []RoleRes `json:"inheritedRole"`
+	Policies       []TeamRes `json:"policies"`
 }
 
 type GetTeamRes struct {
@@ -188,29 +201,21 @@ type Paging struct {
 }
 
 type GetTeamsRes struct {
-	Data   []Team `json:"data"`
-	Paging Paging `json:"paging"`
+	Data   []TeamRes `json:"data"`
+	Paging Paging    `json:"paging"`
 }
-type Team struct {
-	ID             string          `json:"id"`
-	Description    string          `json:"description"`
-	DisplayName    string          `json:"displayName"`
-	TeamType       string          `json:"teamType"`
-	Name           string          `json:"name"`
-	InheritedRoles []InheritedRole `json:"inheritedRole"`
-	Policies       []Team_role     `json:"policies"`
-}
+
 type PatchTeamReq struct {
 	Op    string      `json:"op"`
 	Path  string      `json:"path"`
 	Value interface{} `json:"value"`
 }
 type PatchTeamRes struct {
-	ID             string          `json:"id"`
-	Description    string          `json:"description"`
-	DisplayName    string          `json:"displayName"`
-	TeamType       string          `json:"teamType"`
-	Name           string          `json:"name"`
-	InheritedRoles []InheritedRole `json:"inheritedRole"`
-	Policies       []Team_role     `json:"policies"`
+	ID             string    `json:"id"`
+	Description    string    `json:"description"`
+	DisplayName    string    `json:"displayName"`
+	TeamType       string    `json:"teamType"`
+	Name           string    `json:"name"`
+	InheritedRoles []RoleRes `json:"inheritedRole"`
+	Policies       []TeamRes `json:"policies"`
 }

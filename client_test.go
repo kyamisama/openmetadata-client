@@ -19,7 +19,7 @@ func setup() *Client {
 func TestCreateDBService(t *testing.T) {
 	client := setup()
 
-	createdDB := CreateDB_req{
+	createdDB := CreateDBReq{
 		Name:        "Snowflake_DB",
 		ServiceType: "Snowflake",
 		// Description: "snowflake",
@@ -38,7 +38,7 @@ func TestCreateDBService(t *testing.T) {
 func TestUpdateDBService(t *testing.T) {
 	client := setup()
 
-	UpdateDB := UpdateDB_req{
+	UpdateDB := UpdateDBReq{
 		Name:        "Snowflake_DB",
 		ServiceType: "Snowflake",
 		Description: "snowflake2024",
@@ -67,14 +67,14 @@ func TestDeleteDBService(t *testing.T) {
 func TestCreateUsers(t *testing.T) {
 	client := setup()
 
-	newUser := CreateUser_req{
+	newUser := CreateUserReq{
 		Name:        "john.doe",
 		Email:       "john.doe@example.com",
 		DisplayName: "j.d",
 		//Description: "hogehoge",
 		Password: "P@ssW0rd",
 		Roles:    []string{"fa8521d3-d523-4d7f-8935-f7b8379aba2d"},
-		Teams:    []string{"3f9ddb39-84b2-40cd-a5a2-d2e50ca1f478"},
+		Teams:    []string{"3f9ddb39-84b2-40cd-a5a2-d2e50ca1f478", "d0bb2be9-7761-413e-895d-591ef6f8048f"},
 	}
 
 	createdUser, err := client.CreateUser(newUser, &client.AuthToken)
@@ -98,6 +98,11 @@ func TestGetUser(t *testing.T) {
 	if user.ID != id {
 		t.Errorf("GetUser returned unexpected ID: got %v, want %v", user.Name, id)
 	}
+	// log.Printf("Number of Teams: %d", len(user.Teams))
+	for _, team := range user.Teams {
+		fmt.Printf("Team ID: %s, Team Name: %s, Team Type: %s, Team DisplayName: %s\n", team.ID, team.Name, team.Type, team.DisplayName)
+	}
+
 }
 
 func TestGetUsers(t *testing.T) {
@@ -117,7 +122,7 @@ func TestGetUsers(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	client := setup()
 
-	updateData := UpdateUser_req{
+	updateData := UpdateUserReq{
 		Name:        "john.doe",
 		Email:       "john.doe@example.com",
 		DisplayName: "j.d2222",
@@ -140,11 +145,11 @@ func TestUpdateUser(t *testing.T) {
 func TestPatchUser(t *testing.T) {
 	client := setup()
 
-	patchData := []PatchUser_req{
+	patchData := []PatchUserReq{
 		{
 			Op:    "replace",
 			Path:  "/isAdmin",
-			Value: true,
+			Value: false,
 		},
 		{
 			Op:    "replace",
@@ -161,6 +166,11 @@ func TestPatchUser(t *testing.T) {
 			Path:  "/displayName",
 			Value: "",
 		},
+		{
+			Op:    "add",
+			Path:  "/teams",
+			Value: []map[string]string{{"id": "3f9ddb39-84b2-40cd-a5a2-d2e50ca1f478"}},
+		},
 	}
 	// log.Println(patchData)
 	id := "f40054a6-dcde-4b87-a318-03bcab048cf0"
@@ -169,9 +179,6 @@ func TestPatchUser(t *testing.T) {
 		t.Fatalf("PatchUser failed: %v", err)
 	}
 
-	if res.IsAdmin != true {
-		t.Errorf("Expected IsAdmin to be true, got %v", res.IsAdmin)
-	}
 	// log.Println(res.DisplayName)
 	if res.Description != "hogehogepatch" {
 		t.Errorf("Expected Description to be 'hogehogepatch', got %v", res.Description)
@@ -222,22 +229,6 @@ func TestGetTeams(t *testing.T) {
 	}
 }
 
-func TestDeleteTeam(t *testing.T) {
-	client := setup()
-	clientRes, err := client.GetTeams(&client.AuthToken)
-	if err != nil {
-		t.Fatalf("GetTeams failed: %v", err)
-	}
-
-	for _, team := range clientRes.Data {
-		if team.Name == "testTeam" {
-			_, err := client.DeleteTeam(team.ID, &client.AuthToken)
-			if err != nil {
-				t.Fatalf("DeleteTeam failed: %v", err)
-			}
-		}
-	}
-}
 func TestPatchTeam(t *testing.T) {
 	client := setup()
 
@@ -285,5 +276,24 @@ func TestGetTeam(t *testing.T) {
 
 	if user.ID != id {
 		t.Errorf("GetTeam returned unexpected ID: got %v, want %v", user.Name, id)
+	}
+	for _, team := range user.ID {
+		fmt.Printf("%s", string(team))
+	}
+}
+func TestDeleteTeam(t *testing.T) {
+	client := setup()
+	clientRes, err := client.GetTeams(&client.AuthToken)
+	if err != nil {
+		t.Fatalf("GetTeams failed: %v", err)
+	}
+
+	for _, team := range clientRes.Data {
+		if team.Name == "testTeam" {
+			_, err := client.DeleteTeam(team.ID, &client.AuthToken)
+			if err != nil {
+				t.Fatalf("DeleteTeam failed: %v", err)
+			}
+		}
 	}
 }

@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (c *Client) CreateDBService(db CreateDB_req, authToken *string) (*CreateDB_res, error) {
+func (c *Client) CreateDBService(db CreateDBReq, authToken *string) (*CreateDBRes, error) {
 	postJSON, err := json.Marshal(db)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal db data: %w", err)
@@ -16,7 +16,7 @@ func (c *Client) CreateDBService(db CreateDB_req, authToken *string) (*CreateDB_
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
-	var createDB_res CreateDB_res
+	var createDB_res CreateDBRes
 	statusCode, err := c.doRequest(req, &createDB_res)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (c *Client) CreateDBService(db CreateDB_req, authToken *string) (*CreateDB_
 	return &createDB_res, nil
 }
 
-func (c *Client) UpdateDBService(db UpdateDB_req, authToken *string) (*UpdateDB_res, error) {
+func (c *Client) UpdateDBService(db UpdateDBReq, authToken *string) (*UpdateDBRes, error) {
 	postJSON, err := json.Marshal(db)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal db data: %w", err)
@@ -38,7 +38,7 @@ func (c *Client) UpdateDBService(db UpdateDB_req, authToken *string) (*UpdateDB_
 	if err != nil {
 		return nil, fmt.Errorf("failed to db request: %w", err)
 	}
-	var updateDB_res UpdateDB_res
+	var updateDB_res UpdateDBRes
 	statusCode, err := c.doRequest(req, &updateDB_res)
 	if err != nil {
 		return nil, err
